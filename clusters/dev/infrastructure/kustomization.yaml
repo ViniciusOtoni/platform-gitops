@@ -1,0 +1,6 @@
+# Raiz da Kustomization Flux "infrastructure" (declarada em platform-infra/stacks/domains).
+# Componentes compartilhados do cluster: namespaces da plataforma, demo, (futuro) otel-collector, ingress.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../infrastructure/overlays/dev

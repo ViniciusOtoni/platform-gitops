@@ -1,0 +1,15 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  kustomize:
+    uses: ViniciusOtoni/platform-cicd-workflows/.github/workflows/ci-kustomize.yml@v1
+    with:
+      roots: clusters/dev/infrastructure clusters/dev/domains
