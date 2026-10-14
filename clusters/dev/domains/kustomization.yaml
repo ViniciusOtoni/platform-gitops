@@ -4,4 +4,5 @@
 # vindos do Terraform (client IDs de Workload Identity, FQDN do Event Hubs, ACR).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources: []
+resources:
+  - ../../../domains/pedidos/overlays/dev

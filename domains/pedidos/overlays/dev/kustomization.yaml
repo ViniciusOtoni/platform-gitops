@@ -1,0 +1,10 @@
+# Overlay dev do domínio Pedidos. A tag da imagem é atualizada pelo CD do pedidos-service
+# (cd-gitops-promote, mode=commit). Não edite newTag manualmente.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: pedidos-api
+    newName: ${ACR_LOGIN_SERVER}/pedidos/pedidos-api
+    newTag: bootstrap
