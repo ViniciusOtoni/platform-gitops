@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedidos-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pedidos-api
+  template:
+    metadata:
+      labels:
+        app: pedidos-api
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: pedidos-api
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: pedidos-api
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: POSTGRES_HOST
+              value: "${POSTGRES_HOST}"
+            - name: POSTGRES_DB
+              value: pedidos
+            - name: POSTGRES_USER
+              value: "${PEDIDOS_PEDIDOS_API_IDENTITY_NAME}"
+            - name: OUTBOX_RELAY_ROLE
+              value: "${PEDIDOS_OUTBOX_RELAY_IDENTITY_NAME}"
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pedidos-api
+spec:
+  selector:
+    app: pedidos-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

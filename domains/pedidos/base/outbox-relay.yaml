@@ -1,0 +1,44 @@
+# Relay da Transactional Outbox (ADR-0002): lê a outbox no Postgres e publica no Event Hubs.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outbox-relay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outbox-relay
+  template:
+    metadata:
+      labels:
+        app: outbox-relay
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: outbox-relay
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: relay
+          image: pedidos-api
+          command: ["python", "-m", "pedidos.relay"]
+          env:
+            - name: POSTGRES_HOST
+              value: "${POSTGRES_HOST}"
+            - name: POSTGRES_DB
+              value: pedidos
+            - name: POSTGRES_USER
+              value: "${PEDIDOS_OUTBOX_RELAY_IDENTITY_NAME}"
+            - name: EVENTHUB_NAMESPACE_FQDN
+              value: "${EVENTHUB_NAMESPACE_FQDN}"
+          resources:
+            requests:
+              cpu: 20m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

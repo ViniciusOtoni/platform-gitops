@@ -1,0 +1,15 @@
+# Bounded Context Pedidos: namespace = nome do domínio (subject da Workload Identity, ADR-0004).
+# Variáveis ${...} vêm do Terraform (stack runtime) via Flux postBuild.substitute.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: pedidos
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: pedidos
+      edp.platform/domain: pedidos
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - pedidos-api.yaml
+  - outbox-relay.yaml
