@@ -7,4 +7,4 @@ resources:
 images:
   - name: pedidos-api
     newName: ${ACR_LOGIN_SERVER}/pedidos/pedidos-api
-    newTag: sha-0d6eaec
+    newTag: sha-89bb50d
